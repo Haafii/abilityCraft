@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { View, Image, SafeAreaView } from 'react-native';
+import { View, Image, SafeAreaView, StatusBar } from 'react-native';
 import SplashScreen from './src/screens/SplashScreen';
 import Login from './src/screens/Login';
 import Register from './src/screens/Register';
@@ -52,13 +52,17 @@ const App = () => {
       {isLoading ? (
         <SplashScreen onSplashComplete={handleSplashComplete} />
       ) : (
-        <SafeAreaView className="flex-1">
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="MainTabs" component={MainTabs} />
-            <Stack.Screen name="Worksheet" component={Worksheet} />
-            <Stack.Screen name="Games" component={Games} />
-          </Stack.Navigator>
-        </SafeAreaView>
+        <>
+          <StatusBar hidden />
+          <SafeAreaView className="flex-1">
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="MainTabs" component={MainTabs} />
+              <Stack.Screen name="Worksheet" component={Worksheet} />
+              <Stack.Screen name="Games" component={Games} />
+            </Stack.Navigator>
+          </SafeAreaView>
+        </>
+
       )}
     </NavigationContainer>
   );
