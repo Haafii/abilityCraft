@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
-const Login = () => {
+const Login = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -9,12 +9,15 @@ const Login = () => {
     // Add your login logic here
     console.log('Username:', username);
     console.log('Password:', password);
+
     // You can add authentication logic here, like making an API call
+
+    // Navigate to the Worksheet page after successful login
+    navigation.navigate('Worksheet');
   };
 
   return (
     <View style={styles.container}>
-
       <TextInput
         style={styles.input}
         placeholder="Username"
@@ -41,12 +44,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    // backgroundColor: '#FFFFFF',
-  },
-  logo: {
-    width: 200,
-    height: 150,
-    marginBottom: 20,
   },
   input: {
     width: '100%',
@@ -70,5 +67,3 @@ const styles = StyleSheet.create({
 });
 
 export default Login;
-
-
