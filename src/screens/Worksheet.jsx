@@ -1,7 +1,17 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, ImageBackground } from 'react-native';
+import { View, Text, Image, StyleSheet, ImageBackground, TouchableOpacity, Linking } from 'react-native';
 
-export default function Worksheet() {
+export default function Worksheet({navigation}) {
+  const handleExploreGamesPress = () => {
+    // Add logic for Explore Games press
+    navigation.navigate('Games');
+  };
+
+  const handleSocialVideosPress = () => {
+    const youtubeSearchUrl = 'https://www.youtube.com/results?search_query=social+videos';
+    Linking.openURL(youtubeSearchUrl);
+  };
+
   return (
     <ImageBackground
       source={require('../../assets/images/worksheet-background.jpg')}
@@ -9,22 +19,22 @@ export default function Worksheet() {
     >
       <View style={styles.container}>
         {/* Explore Games Card */}
-        <View style={styles.card}>
+        <TouchableOpacity style={styles.card} onPress={handleExploreGamesPress}>
           <Image
             source={require('../../assets/images/worksheet-games.jpg')}
             style={styles.cardImage}
           />
           <Text style={styles.cardText}>Explore Games</Text>
-        </View>
+        </TouchableOpacity>
 
         {/* Social Videos Card */}
-        <View style={styles.card}>
+        <TouchableOpacity style={styles.card} onPress={handleSocialVideosPress}>
           <Image
             source={require('../../assets/images/worksheet-video.jpg')}
             style={styles.cardImage}
           />
           <Text style={styles.cardText}>Social Videos</Text>
-        </View>
+        </TouchableOpacity>
       </View>
     </ImageBackground>
   );
@@ -42,7 +52,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Adjust the opacity as needed
+    backgroundColor: 'rgba(169, 169, 169, 0.7)',
     borderRadius: 10,
     padding: 20,
     margin: 10,

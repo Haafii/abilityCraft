@@ -7,6 +7,7 @@ import SplashScreen from './src/screens/SplashScreen';
 import Login from './src/screens/Login';
 import Register from './src/screens/Register';
 import Worksheet from './src/screens/Worksheet';
+import Games from './src/screens/Games';
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -55,6 +56,7 @@ const App = () => {
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="MainTabs" component={MainTabs} />
             <Stack.Screen name="Worksheet" component={Worksheet} />
+            <Stack.Screen name="Games" component={Games} />
           </Stack.Navigator>
         </SafeAreaView>
       )}
