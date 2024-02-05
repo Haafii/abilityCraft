@@ -27,7 +27,7 @@ const MemoryTest = () => {
 
     setImages(selectedImages);
     console.log(selectedImages);
-    setTimer(3);
+    setTimer(30);
     setCountingDown(true);
   };
 
