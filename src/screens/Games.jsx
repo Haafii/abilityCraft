@@ -4,6 +4,7 @@ import { View, Text, ImageBackground, TouchableOpacity, StyleSheet, Image } from
 const Games = ({ navigation }) => {
     const handleBasicEtiquettePress = () => {
         console.log('Basic Etiquette card pressed');
+        navigation.navigate('BasicEtiquette');
         // Add your logic specific to Basic Etiquette card here
     };
 
