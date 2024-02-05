@@ -15,6 +15,7 @@ const Games = ({ navigation }) => {
 
     const handleSpeakingPress = () => {
         console.log('Speaking card pressed');
+        navigation.navigate('Speaking');
         // Add your logic specific to Speaking card here
     };
 
