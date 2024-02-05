@@ -26,7 +26,7 @@ const MemoryTest = () => {
     setSelectedImagesHistory((prevHistory) => [...prevHistory, selectedImages]);
 
     setImages(selectedImages);
-    console.log(selectedImages);
+    console.log(images);
     setTimer(30);
     setCountingDown(true);
   };
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     margin: 15,
   },
   timer: {
-    fontSize: 18,
+    fontSize: 40,
     marginTop: 20,
   },
   startButton: {
