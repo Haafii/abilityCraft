@@ -8,6 +8,7 @@ import Login from './src/screens/Login';
 import Register from './src/screens/Register';
 import Worksheet from './src/screens/Worksheet';
 import Games from './src/screens/Games';
+import MemoryTest from './src/screens/MemoryTest';
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -59,6 +60,7 @@ const App = () => {
               <Stack.Screen name="MainTabs" component={MainTabs} />
               <Stack.Screen name="Worksheet" component={Worksheet} />
               <Stack.Screen name="Games" component={Games} />
+              <Stack.Screen name="MemoryTest" component={MemoryTest} />
             </Stack.Navigator>
           </SafeAreaView>
         </>

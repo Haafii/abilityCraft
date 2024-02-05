@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, ImageBackground, TouchableOpacity, StyleSheet, Image } from 'react-native';
 
-const Games = () => {
+const Games = ({ navigation }) => {
     const handleBasicEtiquettePress = () => {
         console.log('Basic Etiquette card pressed');
         // Add your logic specific to Basic Etiquette card here
@@ -9,6 +9,7 @@ const Games = () => {
 
     const handleMemoryTestPress = () => {
         console.log('Memory Test card pressed');
+        navigation.navigate('MemoryTest');
         // Add your logic specific to Memory Test card here
     };
 
