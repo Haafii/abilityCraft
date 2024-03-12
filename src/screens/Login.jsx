@@ -6,7 +6,7 @@ const Login = ({ navigation }) => {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    // Add your login logic here
+    // Add your login logic here 
     console.log('Username:', username);
     console.log('Password:', password);
 
