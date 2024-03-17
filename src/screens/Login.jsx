@@ -7,7 +7,6 @@ const Login = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [accessToken, setAccessToken] = useState(null);
 
-
   const fetchCurrentUser = async () => {
     try {
       console.log(accessToken);
