@@ -1,55 +1,101 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const Register = () => {
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [errors, setErrors] = useState({});
+  const navigation = useNavigation();
 
-  const handleRegister = () => {
-    // Add your registration logic here
-    console.log('Full Name:', fullName);
-    console.log('Username:', username);
-    console.log('Password:', password);
-    console.log('Confirm Password:', confirmPassword);
-    // You can add registration logic here, like making an API call
+  const handleRegister = async () => {
+    const newErrors = {};
+    if (!fullName) {
+      newErrors.fullName = 'Please enter your full name';
+    }
+    if (!username) {
+      newErrors.username = 'Please enter your username';
+    }
+    if (!password) {
+      newErrors.password = 'Please enter your password';
+    }
+    if (!confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your password';
+    }
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      try {
+        const response = await fetch('http://192.168.1.53:8500/user/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            fullName,
+            username,
+            password,
+          }),
+        });
+        const data = await response.json();
+        if(data.message === "User already registered"){
+          console.log("User already registered")
+          alert("Username is already taken! Please try another username")
+        } else {
+          console.log('User registered successfully:', data);
+          navigation.navigate('Login');
+        }
+      } catch (error) {
+        console.error('Error registering user:', error.message);
+      }
+    }
   };
 
-  return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Full Name"
-        value={fullName}
-        onChangeText={(text) => setFullName(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        value={username}
-        onChangeText={(text) => setUsername(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={(text) => setPassword(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        secureTextEntry
-        value={confirmPassword}
-        onChangeText={(text) => setConfirmPassword(text)}
-      />
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Sign Up</Text>
-      </TouchableOpacity>
-    </View>
-  );
+return (
+  <View style={styles.container}>
+    <TextInput
+      style={styles.input}
+      placeholder="Full Name"
+      value={fullName}
+      onChangeText={(text) => setFullName(text)}
+    />
+    {errors.fullName && <Text style={styles.error}>{errors.fullName}</Text>}
+    <TextInput
+      style={styles.input}
+      placeholder="Username"
+      value={username}
+      onChangeText={(text) => setUsername(text)}
+    />
+    {errors.username && <Text style={styles.error}>{errors.username}</Text>}
+    <TextInput
+      style={styles.input}
+      placeholder="Password"
+      secureTextEntry
+      value={password}
+      onChangeText={(text) => setPassword(text)}
+    />
+    {errors.password && <Text style={styles.error}>{errors.password}</Text>}
+    <TextInput
+      style={styles.input}
+      placeholder="Confirm Password"
+      secureTextEntry
+      value={confirmPassword}
+      onChangeText={(text) => setConfirmPassword(text)}
+    />
+    {errors.confirmPassword && <Text style={styles.error}>{errors.confirmPassword}</Text>}
+    <TouchableOpacity style={styles.button} onPress={handleRegister}>
+      <Text style={styles.buttonText}>Sign Up</Text>
+    </TouchableOpacity>
+  </View>
+);
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -76,6 +122,10 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     fontWeight: 'bold',
+  },
+  error: {
+    color: 'red',
+    marginBottom: 10,
   },
 });
 
