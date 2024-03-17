@@ -11,7 +11,7 @@ const Login = ({ navigation }) => {
     try {
       console.log(accessToken);
       if (!accessToken) {
-        throw new Error('No token found');
+        throw new Error('Internal server error try again');
       }
       const response = await axios.get('http://192.168.1.53:8500/user/current', {
         headers: {
@@ -34,7 +34,7 @@ const Login = ({ navigation }) => {
       if (response.status === 200) {
         console.log(response.data.accessToken);
         setAccessToken(response.data.accessToken);
-        if(fetchCurrentUser()){
+        if(fetchCurrentUser() && accessToken != null){
         navigation.navigate('Worksheet');
         }
       }
