@@ -1,19 +1,47 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import axios from 'axios';
 
 const Login = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [accessToken, setAccessToken] = useState(null);
 
-  const handleLogin = () => {
-    // Add your login logic here 
-    console.log('Username:', username);
-    console.log('Password:', password);
 
-    // You can add authentication logic here, like making an API call
+  const fetchCurrentUser = async () => {
+    try {
+      console.log(accessToken);
+      if (!accessToken) {
+        throw new Error('No token found');
+      }
+      const response = await axios.get('http://192.168.1.53:8500/user/current', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+      console.log(response.data.username);
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    }
+  };
 
-    // Navigate to the Worksheet page after successful login
-    navigation.navigate('Worksheet');
+
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post('http://192.168.1.53:8500/user/login', {
+        username: username,
+        password: password
+      });
+      if (response.status === 200) {
+        console.log(response.data.accessToken);
+        setAccessToken(response.data.accessToken);
+        if(fetchCurrentUser()){
+        navigation.navigate('Worksheet');
+        }
+      }
+    } catch (error) {
+      Alert.alert('Error', error.response.data.message);
+    }
   };
 
   return (
