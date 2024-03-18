@@ -8,15 +8,14 @@ export default function Profile() {
                 source={{ uri: 'https://via.placeholder.com/150' }}
             />
             <Text style={styles.username}>John Doe</Text>
-            <Text style={styles.bio}>Software Developer | React Native Enthusiast</Text>
             <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Email:</Text>
+                <Text style={styles.infoLabel}>Username:</Text>
                 <Text style={styles.infoText}>johndoe@example.com</Text>
             </View>
-            <View style={styles.infoContainer}>
+            {/* <View style={styles.infoContainer}>
                 <Text style={styles.infoLabel}>Location:</Text>
                 <Text style={styles.infoText}>New York, USA</Text>
-            </View>
+            </View> */}
             {/* Add more info sections as needed */}
         </View>
     );
