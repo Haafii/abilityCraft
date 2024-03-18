@@ -11,6 +11,7 @@ import Games from './src/screens/Games';
 import MemoryTest from './src/screens/MemoryTest';
 import Speaking from './src/screens/Speaking';
 import BasicEtiquette from './src/screens/BasicEtiquette';
+import Profile from './src/screens/Profile';
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -65,6 +66,7 @@ const App = () => {
               <Stack.Screen name="BasicEtiquette" component={BasicEtiquette} />
               <Stack.Screen name="MemoryTest" component={MemoryTest} />
               <Stack.Screen name="Speaking" component={Speaking} />
+              <Stack.Screen name="Profile" component={Profile} />
             </Stack.Navigator>
           </SafeAreaView>
         </>
