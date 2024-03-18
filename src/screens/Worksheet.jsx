@@ -15,6 +15,9 @@ export default function Worksheet({navigation}) {
   const handleProfilePress = () => {
     navigation.navigate('Profile');
   };
+  const handleLogPress = () => {
+    navigation.navigate('Log');
+  }
 
   return (
     <ImageBackground
@@ -46,7 +49,7 @@ export default function Worksheet({navigation}) {
         </TouchableOpacity>
 
         {/* Log Button */}
-        <TouchableOpacity style={[styles.button]}>
+        <TouchableOpacity style={[styles.button]} onPress={handleLogPress}>
           <Text style={styles.buttonText}>Log</Text>
         </TouchableOpacity>
       </View>
