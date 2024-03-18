@@ -1,6 +1,12 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+
 export default function Profile() {
+    const handleLogout = () => {
+        // Implement your logout logic here
+        // For example, navigate to the login screen or clear user session
+    };
+
     return (
         <View style={styles.container}>
             <Image
@@ -17,9 +23,13 @@ export default function Profile() {
                 <Text style={styles.infoText}>New York, USA</Text>
             </View> */}
             {/* Add more info sections as needed */}
+            <TouchableOpacity style={styles.buttonContainer} onPress={handleLogout}>
+                <Text style={styles.buttonText}>Logout</Text>
+            </TouchableOpacity>
         </View>
     );
 };
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -54,5 +64,17 @@ const styles = StyleSheet.create({
     },
     infoText: {
         fontSize: 16,
+    },
+    buttonContainer: {
+        backgroundColor: 'rgba(169, 169, 169, 0.7)',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+        marginTop: 20,
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
     },
 });
