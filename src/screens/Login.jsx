@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -19,6 +20,9 @@ const Login = ({ navigation }) => {
         }
       });
       console.log(response.data.username);
+      AsyncStorage.setItem('loggedUsername', response.data.username);
+      AsyncStorage.setItem('isLoggedIn', JSON.stringify(true));
+      console.log('Success');
     } catch (error) {
       Alert.alert('Error', error.message);
     }

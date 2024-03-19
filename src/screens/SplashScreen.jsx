@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { View, Image, StyleSheet, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SplashScreen = ({ onSplashComplete }) => {
+  const [logged, setLogged] = useState(false)
+  async function getData() {
+    const loggedUsername = await AsyncStorage.getItem('loggedUsername');
+    console.log(loggedUsername);
+    if (loggedUsername) {
+      setLogged(true);
+    }
+  }
+
   useEffect(() => {
-    // Simulate a delay for the splash screen (you can replace this with any asynchronous task)
+    getData();
     const delay = setTimeout(() => {
       onSplashComplete();
     }, 2000);
