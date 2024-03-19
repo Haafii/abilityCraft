@@ -62,6 +62,7 @@ const App = () => {
           <SafeAreaView className="flex-1">
             <Stack.Navigator screenOptions={{ headerShown: false }}>
               <Stack.Screen name="MainTabs" component={MainTabs} />
+              {/* <Stack.Screen name="Login" component={Login} /> */}
               <Stack.Screen name="Worksheet" component={Worksheet} />
               <Stack.Screen name="Games" component={Games} />
               <Stack.Screen name="BasicEtiquette" component={BasicEtiquette} />

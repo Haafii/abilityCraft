@@ -1,10 +1,23 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Profile() {
+
+export default function Profile({navigation}) {
+    const removeData = async (key) => {
+        try {
+          await AsyncStorage.removeItem(key);
+          console.log('Data removed successfully!');
+          navigation.navigate('Login');
+        } catch (error) {
+          console.log('Error removing data:', error);
+        }
+      };
+
+
     const handleLogout = () => {
-        // Implement your logout logic here
-        // For example, navigate to the login screen or clear user session
+        // removeData('loggedUsername');
+
     };
 
     return (
