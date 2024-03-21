@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, SafeAreaView } from 'react-native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const Log = () => {
   const [selectedTab, setSelectedTab] = useState('Basic Etiquette');
-
   const basicEtiquetteData = [
     { date: '2024-03-15', timeToComplete: '1:30', numberOfWrong: 2, totalAttempts: 5, score: 80 },
     // Add more data as needed

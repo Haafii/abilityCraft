@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
 const Login = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -14,7 +15,7 @@ const Login = ({ navigation }) => {
       if (!accessToken) {
         throw new Error('Internal server error try again');
       }
-      const response = await axios.get('http://192.168.1.53:8500/user/current', {
+      const response = await axios.get(`${process.env.API_HOST}/user/current`, {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
@@ -31,7 +32,7 @@ const Login = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://192.168.1.53:8500/user/login', {
+      const response = await axios.post(`${process.env.API_HOST}/user/login`, {
         username: username,
         password: password
       });
