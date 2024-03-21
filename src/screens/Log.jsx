@@ -1,22 +1,124 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+
 const Log = () => {
   const [selectedTab, setSelectedTab] = useState('Basic Etiquette');
-  const basicEtiquetteData = [
-    { date: '2024-03-15', timeToComplete: '1:30', numberOfWrong: 2, totalAttempts: 5, score: 80 },
-    // Add more data as needed
-  ];
+  const [username, setUsername] = useState('');
+  const basicEtiquetteData = [];
+  const memoryTestData = [];
+  const speechTrainingData = [];
 
-  const memoryTestData = [
-    { date: '2024-03-16', difficulty: 'Medium', timeToComplete: '2:00', numberOfWrong: 3, totalAttempts: 6, score: 75 },
-    // Add more data as needed
-  ];
+  const getUser = async (key) => {
+    try {
+      const value = await AsyncStorage.getItem(key);
+      if (value !== null) {
+        console.log('User is: ', value);
+        setUsername(value);
+      } else {
+        console.log('No data found.');
+      }
+    } catch (error) {
+      console.error('Error retrieving data:', error);
+    }
+  };
+  getUser("loggedUsername");
 
-  const speechTrainingData = [
-    { date: '2024-03-17', attemptsForPic: 4, attemptsForSpeech: 2, score: 90 },
-    // Add more data as needed
-  ];
+  const adjustToIST = (dateTimeString) => {
+    const utcDateTime = new Date(dateTimeString);
+    const istDateTime = new Date(utcDateTime.getTime() + (5.5 * 60 * 60 * 1000)); // Add IST offset (+5:30 hours)
+    const date = istDateTime.toISOString().split('T')[0];
+    const time = istDateTime.toLocaleTimeString('en-US', { hour12: false });
+    return `${date} ${time}`;
+  };
+  const formatDateTimeToIST = (dateTimeString) => {
+    try {
+      if (dateTimeString.endsWith('Z')) {
+        // Manually adjust to IST for UTC date-time strings
+        return adjustToIST(dateTimeString);
+      }
+  
+      // For non-UTC date-time strings, perform regular IST conversion
+      const dateTime = new Date(dateTimeString);
+      if (isNaN(dateTime.getTime())) {
+        console.error('Invalid date format:', dateTimeString);
+        return null;
+      }
+  
+      const istDateTime = new Date(dateTime.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+      if (isNaN(istDateTime.getTime())) {
+        console.error('Error converting to IST:', dateTimeString);
+        return null;
+      }
+  
+      const date = istDateTime.toISOString().split('T')[0];
+      const time = istDateTime.toLocaleTimeString('en-US', { hour12: false });
+      return `${date} ${time}`;
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return null;
+    }
+  };
+
+  const fetchBasicEtiquetteData = async () => {
+    try {
+      const apiUrl = `${process.env.API_HOST}/games/getbasicetiquette/${username}`;
+      const response = await axios.get(apiUrl);
+      const formattedData = response.data.map(item => ({
+        date: formatDateTimeToIST(item.date),
+        timeToComplete: parseInt(item.timeToComplete),
+        numberOfWrong: parseInt(item.noOfWrong),
+        totalAttempts: parseInt(item.totalNoOfAttempt),
+        score: parseInt(item.score),
+      }));
+      basicEtiquetteData.push(...formattedData);
+      // console.log(basicEtiquetteData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+  fetchBasicEtiquetteData()
+
+
+  const fetchMemoryTestData = async () => {
+    try {
+      const apiUrl = `${process.env.API_HOST}/games/getmemorytest/${username}`;
+      const response = await axios.get(apiUrl);
+      const formattedData = response.data.map(item => ({
+        date: formatDateTimeToIST(item.date),
+        difficulty: parseInt(item.difficulty),
+        timeToComplete: parseInt(item.timeToComplete),
+        numberOfWrong: parseInt(item.noOfWrong),
+        totalAttempts: parseInt(item.totalNoOfAttempt),
+        score: parseInt(item.score),
+      }));
+      memoryTestData.push(...formattedData);
+      // console.log(memoryTestData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+  fetchMemoryTestData()
+
+  const fetchSpeechTrainingData = async () => {
+    try {
+      const apiUrl = `${process.env.API_HOST}/games/getspeechtraining/${username}`;
+      const response = await axios.get(apiUrl);
+      const formattedData = response.data.map(item => ({
+        date: formatDateTimeToIST(item.date),
+        attemptsForPic: parseInt(item.attemptForPicture),
+        attemptsForSpeech: parseInt(item.attemptForSpeech),
+        score: parseInt(item.score),
+      }));
+      speechTrainingData.push(...formattedData);
+      // console.log(speechTrainingData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+  fetchSpeechTrainingData()
+
 
   const renderTable = () => {
     switch (selectedTab) {
