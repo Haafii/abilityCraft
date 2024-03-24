@@ -16,7 +16,8 @@ export default function Profile({navigation}) {
 
 
     const handleLogout = () => {
-        // removeData('loggedUsername');
+        removeData('loggedUsername');
+        
 
     };
 

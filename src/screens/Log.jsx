@@ -14,7 +14,7 @@ const Log = () => {
     try {
       const value = await AsyncStorage.getItem(key);
       if (value !== null) {
-        console.log('User is: ', value);
+        console.log('User is:',value);
         setUsername(value);
       } else {
         console.log('No data found.');
@@ -202,6 +202,7 @@ const Log = () => {
     }
   };
 
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.tabContainer}>
@@ -284,6 +285,76 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
+  noDataText: {
+    textAlign: 'center',
+    fontStyle: 'italic',
+    marginTop: 10,
+  },  
 });
 
 export default Log;
+
+
+
+
+
+
+
+// import React, { useState, useEffect } from 'react';
+// import { View, Text, FlatList, StyleSheet, SafeAreaView } from 'react-native';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
+// import axios from 'axios';
+// import { useNavigation } from '@react-navigation/native';
+
+// const Log = () => {
+//   const [selectedTab, setSelectedTab] = useState('Basic Etiquette');
+//   const [username, setUsername] = useState('');
+//   const [basicEtiquetteData, setBasicEtiquetteData] = useState([]);
+//   const [memoryTestData, setMemoryTestData] = useState([]);
+//   const [speechTrainingData, setSpeechTrainingData] = useState([]);
+//   const navigation = useNavigation();
+
+//   useEffect(() => {
+//     const unsubscribe = navigation.addListener('beforeRemove', () => {
+//       // Clear arrays when user navigates away from the screen
+//       setBasicEtiquetteData([]);
+//       setMemoryTestData([]);
+//       setSpeechTrainingData([]);
+//     });
+
+//     return unsubscribe;
+//   }, [navigation]);
+
+//   useEffect(() => {
+//     const getUser = async (key) => {
+//       try {
+//         const value = await AsyncStorage.getItem(key);
+//         if (value !== null) {
+//           console.log('User is:', value);
+//           setUsername(value);
+//         } else {
+//           console.log('No data found.');
+//         }
+//       } catch (error) {
+//         console.error('Error retrieving data:', error);
+//       }
+//     };
+//     getUser("loggedUsername");
+
+//     // Fetch data functions and renderTable function
+//   }, []);
+
+//   // Styles and rendering logic remain the same
+
+//   return (
+//     <SafeAreaView style={styles.container}>
+//       {/* Tab buttons, FlatList, and other UI components */}
+//     </SafeAreaView>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   // Styles remain the same
+// });
+
+// export default Log;

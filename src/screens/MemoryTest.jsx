@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { ObjectImages } from '../../assets/images/Objects/ObjectImages';
+import { db } from '../../config';
+import { ref, onValue } from "firebase/database";
+import { getKeyById } from '../../constants/ObjectId';
+import { Images } from "../../assets/images/Objects/Images";
+
 
 const MemoryTest = () => {
   const [difficulty, setDifficulty] = useState(null);
@@ -10,13 +15,16 @@ const MemoryTest = () => {
   const [start, setStart] = useState(false);
   const [selectedImagesHistory, setSelectedImagesHistory] = useState([]);
   const [showButtons, setShowButtons] = useState(true);
+  const [currentObject, setCurrentObject] = useState(null);
+
+  console.log(currentObject);
 
   const startGame = (difficultyLevel) => {
     setDifficulty(difficultyLevel);
     const numberOfImages = difficultyLevel === 'easy' ? 4 : difficultyLevel === 'medium' ? 8 : 12;
 
     const selectedImages = [];
-    
+
     while (selectedImages.length < numberOfImages) {
       const randomImage = ObjectImages[Math.floor(Math.random() * ObjectImages.length)];
       if (!selectedImages.includes(randomImage)) {
@@ -52,6 +60,20 @@ const MemoryTest = () => {
     return () => clearInterval(interval);
   }, [countingDown, timer]);
 
+  useEffect(() => {
+    const startCountRef = ref(db, 'rfid/');
+    onValue(startCountRef, (snapshot) => {
+      const data = snapshot.val();
+      // console.log(data);
+      // const cardData = Object.values(data).map(item => item.cardUID); // Extract cardUIDs from the data
+      // const cardUIDString = cardData.join(', '); // Join cardUIDs into a string separated by ', ' (comma and space)
+      // console.log(cardData);
+      // setCardUID(cardUIDString);
+      console.log(data.cardUID);
+      setCurrentObject(getKeyById(data.cardUID));
+    });
+  }, []);
+
   const handleStartClick = () => {
     setCountingDown(true);
     setTimer(1000);
@@ -69,14 +91,14 @@ const MemoryTest = () => {
   return (
     <View className="flex-1 bg-gray-200 w-full h-full items-center justify-center">
       {showButtons && <View style={styles.buttonContainer} className="flex-row w-1/2 items-center justify-between">
-        <Button title="Easy" onPress={() => startGame('easy')}/>
+        <Button title="Easy" onPress={() => startGame('easy')} />
         <Button title="Medium" onPress={() => startGame('medium')} />
         <Button title="Hard" onPress={() => startGame('hard')} />
       </View>}
       {images.length > 0 && (
         <View style={styles.imageContainer}>
           {images.map((image, index) => (
-            <Image key={index} source={image} style={styles.image} className="object-cover"/>
+            <Image key={index} source={image} style={styles.image} className="object-cover" />
           ))}
         </View>
       )}
@@ -87,9 +109,11 @@ const MemoryTest = () => {
         </TouchableOpacity>
       )}
       {start && (
-        <TouchableOpacity style={styles.startButton} onPress={handleEndClick}>
+      <><TouchableOpacity style={styles.startButton} onPress={handleEndClick}>
           <Text>End</Text>
-        </TouchableOpacity>
+        </TouchableOpacity><View style={styles.container}>
+        {currentObject && <Image source={Images[currentObject]} style={styles.image} />}
+          </View></>
       )}
     </View>
   );
@@ -101,6 +125,16 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     marginBottom: 20,
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  images: {
+    width: 200, // Adjust width as needed
+    height: 200, // Adjust height as needed
+    resizeMode: 'contain', // Adjust the resizeMode as needed
   },
   image: {
     width: 100,
