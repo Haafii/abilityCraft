@@ -2,12 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { ObjectImages } from '../../assets/images/Objects/ObjectImages';
 import { Audio } from 'expo-av';
+import { ref, onValue } from "firebase/database";
+import { getKeyById } from '../../constants/ObjectId';
+import { db } from '../../config';
+
+
+
 
 const Speaking = () => {
   const [randomImage, setRandomImage] = useState(null);
   const [showMicrophone, setShowMicrophone] = useState(false);
   const [recording, setRecording] = React.useState();
   const [recordings, setRecordings] = React.useState([]);
+  const [imageName, setImageName] = useState(null);
+  const [currentObject, setCurrentObject] = useState('abc');
+  const [wrongPlacement, setWrongPlacement] = useState(0);
+  const [correct, setCorrect] = useState(false)
+
+
 
   async function startRecording() {
     try {
@@ -61,21 +73,40 @@ const Speaking = () => {
   function clearRecordings() {
     setRecordings([])
   }
-
   useEffect(() => {
     const getRandomImage = () => {
       const imagesArray = ObjectImages;
       const randomIndex = Math.floor(Math.random() * imagesArray.length);
       return imagesArray[randomIndex];
     };
+
     const randomImage = getRandomImage();
-    setRandomImage(randomImage);
-    const timeoutId = setTimeout(() => {
-      setShowMicrophone(true);
-    }, 3000);
-    return () => clearTimeout(timeoutId);
+    setRandomImage(randomImage.source);
+    setImageName(randomImage.key)
+
+    const startCountRef = ref(db, 'rfid/');
+    onValue(startCountRef, (snapshot) => {
+      const data = snapshot.val();
+      const placedObject = getKeyById(data.cardUID);
+      setCurrentObject(placedObject);
+      // console.log(imageName);
+
+      if (placedObject === randomImage.key) {
+        // console.log("correct placement");
+        setCorrect(true);
+      } else {
+        // console.log("incorrect placement");
+        setWrongPlacement((prevCount) => prevCount + 1);
+      }
+    });
   }, []);
 
+  useEffect(() => {
+    if (correct) {
+      setShowMicrophone(true);
+      console.log("done");
+    }
+  }, [correct]);
   return (
     <View className="bg-gray-300 flex-1 justify-center items-center">
       {randomImage && (
@@ -83,7 +114,9 @@ const Speaking = () => {
           <View className="items-center justify-center">
             <Image source={randomImage} style={styles.image} />
           </View>
-          <Text className="text-2xl font-bold">Place the correct object</Text>
+          <Text style={styles.placementCounter}>Wrong: {wrongPlacement - 1}</Text>
+
+          {correct ? <Text className="text-2xl font-bold">Speak</Text> : <Text className="text-2xl font-bold">Place the correct object</Text>}
         </>
       )}
       {showMicrophone && (
@@ -92,7 +125,9 @@ const Speaking = () => {
             <TouchableOpacity onPress={recording ? stopRecording : startRecording} >
               <Text className="text-3xl">{recording ? '🛑' : '🎤'}</Text>
             </TouchableOpacity>
-            <Button title={recordings.length > 0 ? 'clear Recordings' : ''} onPress={clearRecordings} />
+            {recordings.length > 0 && (
+              <Button title="Clear Recordings" onPress={clearRecordings} />
+            )}
             {getRecordingLines()}
           </View>
         </View>

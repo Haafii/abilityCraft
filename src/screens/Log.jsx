@@ -63,7 +63,7 @@ const Log = () => {
 
   const fetchBasicEtiquetteData = async () => {
     try {
-      const apiUrl = `${process.env.API_HOST}/games/getbasicetiquette/${username}`;
+      const apiUrl = 'http://192.168.43.53:8500/games/getbasicetiquette/admin';
       const response = await axios.get(apiUrl);
       const formattedData = response.data.map(item => ({
         date: formatDateTimeToIST(item.date),
@@ -83,7 +83,7 @@ const Log = () => {
 
   const fetchMemoryTestData = async () => {
     try {
-      const apiUrl = `${process.env.API_HOST}/games/getmemorytest/${username}`;
+      const apiUrl = 'http://192.168.43.53:8500/games/getmemorytest/admin';
       const response = await axios.get(apiUrl);
       const formattedData = response.data.map(item => ({
         date: formatDateTimeToIST(item.date),
@@ -103,7 +103,7 @@ const Log = () => {
 
   const fetchSpeechTrainingData = async () => {
     try {
-      const apiUrl = `${process.env.API_HOST}/games/getspeechtraining/${username}`;
+      const apiUrl = 'http://192.168.43.53:8500/games/getspeechtraining/admin';
       const response = await axios.get(apiUrl);
       const formattedData = response.data.map(item => ({
         date: formatDateTimeToIST(item.date),

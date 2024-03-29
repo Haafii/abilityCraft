@@ -6,8 +6,8 @@ import { ref, onValue } from "firebase/database";
 import { getKeyById } from '../../constants/ObjectId';
 import { Images } from "../../assets/images/Objects/Images";
 
-
 const MemoryTest = () => {
+  const [selectedImageKeys, setSelectedImageKeys] = useState([]);
   const [difficulty, setDifficulty] = useState(null);
   const [images, setImages] = useState([]);
   const [timer, setTimer] = useState(30);
@@ -16,28 +16,40 @@ const MemoryTest = () => {
   const [selectedImagesHistory, setSelectedImagesHistory] = useState([]);
   const [showButtons, setShowButtons] = useState(true);
   const [currentObject, setCurrentObject] = useState(null);
-
-  console.log(currentObject);
+  const [placedObjects, setPlacedObjects] = useState([]);
+  const [correctPlacement, setCorrectPlacement] = useState(0);
+  const [wrongPlacement, setWrongPlacement] = useState(0);
+  
 
   const startGame = (difficultyLevel) => {
     setDifficulty(difficultyLevel);
     const numberOfImages = difficultyLevel === 'easy' ? 4 : difficultyLevel === 'medium' ? 8 : 12;
 
     const selectedImages = [];
+    const keys = [];
 
     while (selectedImages.length < numberOfImages) {
-      const randomImage = ObjectImages[Math.floor(Math.random() * ObjectImages.length)];
-      if (!selectedImages.includes(randomImage)) {
-        selectedImages.push(randomImage);
+      const randomIndex = Math.floor(Math.random() * ObjectImages.length);
+      const randomImage = ObjectImages[randomIndex];
+      const randomImageKey = randomImage.key;
+      if (!keys.includes(randomImageKey)) {
+        selectedImages.push(randomImage.source);
+        keys.push(randomImageKey);
       }
     }
-    setSelectedImagesHistory((prevHistory) => [...prevHistory, selectedImages]);
-
+    // console.log("images",keys);
+    setSelectedImagesHistory((prevHistory) => [...prevHistory, keys]);
+    const updatedKeys = [...keys]
+    setSelectedImageKeys(updatedKeys);
     setImages(selectedImages);
-    console.log(images);
     setTimer(30);
     setCountingDown(true);
   };
+
+
+  useEffect(() => {
+    // console.log("selectedImageKeys", selectedImageKeys);
+  }, [selectedImageKeys]);
 
   useEffect(() => {
     // Clear the selected images history array when a new random selection takes place
@@ -54,25 +66,40 @@ const MemoryTest = () => {
     } else if (countingDown && timer === 0) {
       setCountingDown(false);
       setImages([]);
-      setShowButtons(false)
+      setShowButtons(false);
     }
 
     return () => clearInterval(interval);
   }, [countingDown, timer]);
 
+
+  
   useEffect(() => {
     const startCountRef = ref(db, 'rfid/');
     onValue(startCountRef, (snapshot) => {
       const data = snapshot.val();
-      // console.log(data);
-      // const cardData = Object.values(data).map(item => item.cardUID); // Extract cardUIDs from the data
-      // const cardUIDString = cardData.join(', '); // Join cardUIDs into a string separated by ', ' (comma and space)
-      // console.log(cardData);
-      // setCardUID(cardUIDString);
-      console.log(data.cardUID);
+      // console.log("data from firebase :",data.cardUID);
       setCurrentObject(getKeyById(data.cardUID));
+
+      placedObjects.push(getKeyById(data.cardUID));
+      setPlacedObjects([...placedObjects]);
+
+      // Call the checkPlacement function when placing a new object
+      checkPlacement(getKeyById(data.cardUID));
+      // console.log("reading from firebase and passed to getKey:",getKeyById(data.cardUID));
     });
   }, []);
+
+  // Function to check placement and update counters
+  const checkPlacement = (objectId) => {
+    console.log("yyy",selectedImageKeys);
+    if (selectedImageKeys.flat().includes(objectId)) {
+      setCorrectPlacement((prevCount) => prevCount + 1);
+    } else {
+      setWrongPlacement((prevCount) => prevCount + 1);
+    }
+  };
+
 
   const handleStartClick = () => {
     setCountingDown(true);
@@ -84,12 +111,19 @@ const MemoryTest = () => {
   const handleEndClick = () => {
     setCountingDown(false);
     setStart(false);
-    console.log(1000 - timer);
+    // console.log(1000 - timer);
     setShowButtons(true);
+    setPlacedObjects([]);
+    setCorrectPlacement(0);
+    setWrongPlacement(0);
   };
 
   return (
     <View className="flex-1 bg-gray-200 w-full h-full items-center justify-center">
+      {/* Render placement counters */}
+      <Text style={styles.placementCounter}>Correct Placement: {correctPlacement}</Text>
+      <Text style={styles.placementCounter}>Wrong Placement: {wrongPlacement - 1}</Text>
+
       {showButtons && <View style={styles.buttonContainer} className="flex-row w-1/2 items-center justify-between">
         <Button title="Easy" onPress={() => startGame('easy')} />
         <Button title="Medium" onPress={() => startGame('medium')} />
@@ -109,15 +143,21 @@ const MemoryTest = () => {
         </TouchableOpacity>
       )}
       {start && (
-      <><TouchableOpacity style={styles.startButton} onPress={handleEndClick}>
+        <><TouchableOpacity style={styles.startButton} onPress={handleEndClick}>
           <Text>End</Text>
-        </TouchableOpacity><View style={styles.container}>
-        {currentObject && <Image source={Images[currentObject]} style={styles.image} />}
+        </TouchableOpacity>
+          <View style={styles.container}>
+            {currentObject && placedObjects.slice(1).map((item, index) => (
+              <Image key={index} source={Images[item]} style={styles.image} />
+            ))}
           </View></>
+
       )}
     </View>
   );
 };
+
+export default MemoryTest;
 
 const styles = StyleSheet.create({
   imageContainer: {
@@ -130,6 +170,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
   },
   images: {
     width: 200, // Adjust width as needed
@@ -151,6 +194,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'lightblue',
     borderRadius: 5,
   },
+  placementCounter: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 10,
+    color: '#333', // You can change the color as needed
+  },
 });
-
-export default MemoryTest;

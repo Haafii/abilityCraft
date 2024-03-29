@@ -32,7 +32,9 @@ const Register = () => {
 
     if (Object.keys(newErrors).length === 0) {
       try {
-        const response = await fetch(`${process.env.API_HOST}/user/register`, {
+        // const response = await fetch(`${process.env.API_HOST}/user/register`, {
+        const response = await fetch('http://192.168.43.53:8500/user/register', {
+
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
