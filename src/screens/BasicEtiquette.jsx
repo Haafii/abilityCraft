@@ -1,17 +1,90 @@
+
+// working code
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Video } from 'expo-av';
+import { db } from '../../config';
+import { ref, onValue } from "firebase/database";
+import { ObjectImages } from '../../assets/images/BasicEtiquette/ObjectImages';
+import { getKeyById } from '../../constants/BasicEtiquetteId';
+
+const videoNames = ["1.mp4", "2.mp4", "3.mp4"]; // Array of video names
+
+const videos = [
+    require('../../assets/videos/1.mp4'),
+    require('../../assets/videos/2.mp4'),
+    require('../../assets/videos/3.mp4'),
+];
+
+const videoPrefixMap = {
+    0: "One",
+    1: "Two",
+    2: "Three"
+};
+
+const placeCardArrays = videoNames.map((name, index) => {
+    const prefix = videoPrefixMap[index];
+    return Array.from({ length: 4 }, (_, i) => `${prefix}${i + 1}`);
+});
 
 const BasicEtiquette = () => {
     const [showVideo, setShowVideo] = useState(true);
     const [showPlaceCards, setShowPlaceCards] = useState(false);
     const [count, setCount] = useState(0);
+    const [selectedVideoIndex, setSelectedVideoIndex] = useState(null);
+    const [correctPlacement, setCorrectPlacement] = useState(0);
+    const [wrongPlacement, setWrongPlacement] = useState(0);
+    const [showEnd, setShowEnd] = useState(false);
+    const [gameEnded, setGameEnded] = useState(false);
+    const [score, setScore] = useState(null);
+    const [placedObjects, setPlacedObjects] = useState([]);
 
-    const videos = [
-        require('../../assets/videos/1.mp4'),
-        require('../../assets/videos/2.mp4'),
-        require('../../assets/videos/3.mp4'),
-    ];
+
+    let currentIndex = 0;
+    const max_time = 90;
+    const max_wrong_attempt = 20;
+    const max_total_attempt = 24
+
+    useEffect(() => {
+        const randomIndex = Math.floor(Math.random() * videos.length);
+        setSelectedVideoIndex(randomIndex);
+    }, []);
+
+
+    const handleSubmitScore = () => {
+        console.log(count);
+        setScore(10 - (3.33 * ((count / max_time) + (wrongPlacement / max_wrong_attempt) + (wrongPlacement / max_total_attempt))));
+        console.log("Score:", score);
+        setGameEnded(true); 
+    }
+
+    useEffect(() => {
+        if (selectedVideoIndex !== null) {
+            const startCountRef = ref(db, 'rfid/');
+            onValue(startCountRef, (snapshot) => {
+                const data = snapshot.val();
+                const card = getKeyById(data.cardUID);
+                placedObjects.push(getKeyById(data.cardUID));
+                setPlacedObjects([...placedObjects]);
+                // console.log("Card:", card);
+                // console.log("Current Index:", currentIndex);
+                // console.log("Selected Video:", videoNames[selectedVideoIndex]);
+                console.log("Place Card Array:", placeCardArrays[selectedVideoIndex]);
+                if (currentIndex < placeCardArrays[selectedVideoIndex].length && placeCardArrays[selectedVideoIndex][currentIndex] == card) {
+                    setCorrectPlacement((prevCount) => prevCount + 1);
+                    console.log("Correct Placement");
+                    currentIndex++;
+                    if (currentIndex == 4) {
+                        setShowEnd(true);
+                    }
+                } else {
+                    setWrongPlacement((prevCount) => prevCount + 1);
+                    console.log("Wrong Placement");
+                }
+
+            });
+        }
+    }, [selectedVideoIndex]);
 
     const onEnd = () => {
         setShowVideo(false);
@@ -30,11 +103,24 @@ const BasicEtiquette = () => {
         };
     }, [showVideo, showPlaceCards]);
 
+    // Conditionally render score and placement when game ends
+    if (gameEnded) {
+        return (
+            <View style={styles.container} className="bg-gray-300">
+                <Text style={styles.placementCounter}>Correct Placement: {correctPlacement}</Text>
+                <Text style={styles.placementCounter}>Wrong Placement: {wrongPlacement - 1}</Text>
+                <Text style={styles.placementCounter}>Score: {score}</Text>
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container} className="bg-gray-300">
+            <Text style={styles.placementCounter}>Correct Placement: {correctPlacement}</Text>
+            <Text style={styles.placementCounter}>Wrong Placement: {wrongPlacement - 1}</Text>
             {showVideo && (
                 <Video
-                    source={videos[Math.floor(Math.random() * videos.length)]}
+                    source={videos[selectedVideoIndex]}
                     shouldPlay
                     isLooping={false}
                     onPlaybackStatusUpdate={(status) => {
@@ -45,12 +131,22 @@ const BasicEtiquette = () => {
                     style={styles.video}
                 />
             )}
-
-            {showPlaceCards && (
+            {showPlaceCards && (<>
                 <View style={styles.placeCardsContainer}>
                     <Text style={styles.placeCardsText}>Place Cards</Text>
                     <Text style={styles.countText}>{`${count}`}</Text>
                 </View>
+                <View style={styles.containerImage}>
+                    {placedObjects.slice(1).map((item, index) => (
+                        // console.log("Item:", item),
+                        // console.log("Index:", index),
+                        <Image key={index} source={ObjectImages[item]} style={styles.image} />
+                    ))}
+                </View>
+                {showEnd && <TouchableOpacity style={styles.startButton} onPress={handleSubmitScore}>
+                    <Text>End</Text>
+                </TouchableOpacity>}
+            </>
             )}
         </View>
     );
@@ -62,6 +158,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    containerImage: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+      },
     video: {
         width: '100%',
         height: '100%',
@@ -78,10 +182,18 @@ const styles = StyleSheet.create({
     countText: {
         fontSize: 50,
     },
+    startButton: {
+        // marginTop: 10,
+        marginBottom: 40,
+        padding: 20,
+        backgroundColor: 'lightblue',
+        borderRadius: 5,
+    },
+    image: {
+        width: 100,
+        height: 100,
+        margin: 15,
+      },
 });
 
 export default BasicEtiquette;
-
-
-
-

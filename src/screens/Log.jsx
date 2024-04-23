@@ -63,7 +63,7 @@ const Log = () => {
 
   const fetchBasicEtiquetteData = async () => {
     try {
-      const apiUrl = 'http://192.168.43.53:8500/games/getbasicetiquette/admin';
+      const apiUrl = 'http://192.168.1.38:8500/games/getbasicetiquette/admin';
       const response = await axios.get(apiUrl);
       const formattedData = response.data.map(item => ({
         date: formatDateTimeToIST(item.date),
@@ -83,7 +83,7 @@ const Log = () => {
 
   const fetchMemoryTestData = async () => {
     try {
-      const apiUrl = 'http://192.168.43.53:8500/games/getmemorytest/admin';
+      const apiUrl = 'http://192.168.1.38:8500/games/getmemorytest/admin';
       const response = await axios.get(apiUrl);
       const formattedData = response.data.map(item => ({
         date: formatDateTimeToIST(item.date),
@@ -94,7 +94,7 @@ const Log = () => {
         score: parseInt(item.score),
       }));
       memoryTestData.push(...formattedData);
-      // console.log(memoryTestData);
+      console.log(memoryTestData);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -103,7 +103,7 @@ const Log = () => {
 
   const fetchSpeechTrainingData = async () => {
     try {
-      const apiUrl = 'http://192.168.43.53:8500/games/getspeechtraining/admin';
+      const apiUrl = 'http://192.168.1.38:8500/games/getspeechtraining/admin';
       const response = await axios.get(apiUrl);
       const formattedData = response.data.map(item => ({
         date: formatDateTimeToIST(item.date),

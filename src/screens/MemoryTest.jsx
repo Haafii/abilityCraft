@@ -1,3 +1,6 @@
+
+
+//working code 
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { ObjectImages } from '../../assets/images/Objects/ObjectImages';
@@ -37,7 +40,7 @@ const MemoryTest = () => {
         keys.push(randomImageKey);
       }
     }
-    // console.log("images",keys);
+    console.log("images",keys);
     setSelectedImagesHistory((prevHistory) => [...prevHistory, keys]);
     const updatedKeys = [...keys]
     setSelectedImageKeys(updatedKeys);
@@ -48,7 +51,7 @@ const MemoryTest = () => {
 
 
   useEffect(() => {
-    // console.log("selectedImageKeys", selectedImageKeys);
+    console.log("selectedImageKeys", selectedImageKeys);
   }, [selectedImageKeys]);
 
   useEffect(() => {
@@ -78,7 +81,7 @@ const MemoryTest = () => {
     const startCountRef = ref(db, 'rfid/');
     onValue(startCountRef, (snapshot) => {
       const data = snapshot.val();
-      // console.log("data from firebase :",data.cardUID);
+      console.log("data from firebase :",data.cardUID);
       setCurrentObject(getKeyById(data.cardUID));
 
       placedObjects.push(getKeyById(data.cardUID));
@@ -86,7 +89,7 @@ const MemoryTest = () => {
 
       // Call the checkPlacement function when placing a new object
       checkPlacement(getKeyById(data.cardUID));
-      // console.log("reading from firebase and passed to getKey:",getKeyById(data.cardUID));
+      console.log("reading from firebase and passed to getKey:",getKeyById(data.cardUID));
     });
   }, []);
 
@@ -201,3 +204,6 @@ const styles = StyleSheet.create({
     color: '#333', // You can change the color as needed
   },
 });
+
+
+
