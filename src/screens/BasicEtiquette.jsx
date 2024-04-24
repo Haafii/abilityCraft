@@ -9,9 +9,7 @@ import { getKeyById } from '../../constants/BasicEtiquetteId';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-
-
-const videoNames = ["1.mp4", "2.mp4", "3.mp4"]; // Array of video names
+const videoNames = ["1.mp4", "2.mp4", "3.mp4"];
 
 const videos = [
     require('../../assets/videos/1.mp4'),
@@ -49,7 +47,6 @@ const BasicEtiquette = () => {
         const loggedUsername = await AsyncStorage.getItem('loggedUsername');
         setUsername(loggedUsername)
     }
-    // console.log(username);
 
     let currentIndex = 0;
     const max_time = 90;
@@ -67,15 +64,8 @@ const BasicEtiquette = () => {
             setScore(10 - (3.33 * ((count / max_time) + ((wrongPlacement-1) / max_wrong_attempt) + ((wrongPlacement-1) / max_total_attempt))));      
         }
     })
-
-    // const calculateScore = ()=>{
-    //     setScore(10 - (3.33 * ((count / max_time) + (wrongPlacement / max_wrong_attempt) + (wrongPlacement / max_total_attempt))));
-    //     handleSubmitScore()
-    // }
-
     const handleSubmitScore = async () => {
         console.log(count);
-        // setScore(10 - (3.33 * ((count / max_time) + (wrongPlacement / max_wrong_attempt) + (wrongPlacement / max_total_attempt))));
         console.log("Score:", score);
         setGameEnded(true);
         try {
@@ -188,11 +178,57 @@ const BasicEtiquette = () => {
     );
 };
 
+// const styles = StyleSheet.create({
+//     container: {
+//         flex: 1,
+//         justifyContent: 'center',
+//         alignItems: 'center',
+//     },
+//     containerImage: {
+//         flex: 1,
+//         justifyContent: 'center',
+//         alignItems: 'center',
+//         flexDirection: 'row',
+//         flexWrap: 'wrap',
+//         justifyContent: 'center',
+//       },
+//     video: {
+//         width: '100%',
+//         height: '100%',
+//     },
+//     placeCardsContainer: {
+//         alignItems: 'center',
+//         marginTop: 20,
+//     },
+//     placeCardsText: {
+//         fontSize: 20,
+//         fontWeight: 'bold',
+//         marginBottom: 10,
+//     },
+//     countText: {
+//         fontSize: 50,
+//     },
+//     startButton: {
+//         // marginTop: 10,
+//         marginBottom: 40,
+//         padding: 20,
+//         backgroundColor: 'lightblue',
+//         borderRadius: 5,
+//     },
+//     image: {
+//         width: 100,
+//         height: 100,
+//         margin: 15,
+//       },
+// });
+
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#f0f0f0', // Set a background color for the container
     },
     containerImage: {
         flex: 1,
@@ -211,25 +247,35 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     placeCardsText: {
-        fontSize: 20,
+        fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 10,
     },
+    placementCounter: {
+        fontSize: 18,
+        marginBottom: 10,
+    },
     countText: {
-        fontSize: 50,
+        fontSize: 40,
+        marginBottom: 20,
     },
     startButton: {
-        // marginTop: 10,
-        marginBottom: 40,
-        padding: 20,
-        backgroundColor: 'lightblue',
+        marginTop: 10,
+        paddingVertical: 15,
+        paddingHorizontal: 30,
+        backgroundColor: '#007bff', // Change button color to a primary color
         borderRadius: 5,
+        marginBottom: 40,
+    },
+    startButtonText: {
+        fontSize: 18,
+        color: '#ffffff', // Set text color to white for better contrast
     },
     image: {
         width: 100,
         height: 100,
-        margin: 15,
-      },
+        margin: 10, // Adjust margin for images
+        borderRadius: 5, // Add border radius to images for a softer look
+    },
 });
-
 export default BasicEtiquette;
