@@ -1,5 +1,4 @@
-
-// working code
+//almost completed
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Video } from 'expo-av';
@@ -7,6 +6,10 @@ import { db } from '../../config';
 import { ref, onValue } from "firebase/database";
 import { ObjectImages } from '../../assets/images/BasicEtiquette/ObjectImages';
 import { getKeyById } from '../../constants/BasicEtiquetteId';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+
+
 
 const videoNames = ["1.mp4", "2.mp4", "3.mp4"]; // Array of video names
 
@@ -27,6 +30,8 @@ const placeCardArrays = videoNames.map((name, index) => {
     return Array.from({ length: 4 }, (_, i) => `${prefix}${i + 1}`);
 });
 
+
+
 const BasicEtiquette = () => {
     const [showVideo, setShowVideo] = useState(true);
     const [showPlaceCards, setShowPlaceCards] = useState(false);
@@ -38,7 +43,13 @@ const BasicEtiquette = () => {
     const [gameEnded, setGameEnded] = useState(false);
     const [score, setScore] = useState(null);
     const [placedObjects, setPlacedObjects] = useState([]);
+    const [username, setUsername] = useState(null);
 
+    async function getData() {
+        const loggedUsername = await AsyncStorage.getItem('loggedUsername');
+        setUsername(loggedUsername)
+    }
+    // console.log(username);
 
     let currentIndex = 0;
     const max_time = 90;
@@ -50,12 +61,37 @@ const BasicEtiquette = () => {
         setSelectedVideoIndex(randomIndex);
     }, []);
 
+    useEffect(() => {
+        getData();
+        if (showEnd && !gameEnded) {
+            setScore(10 - (3.33 * ((count / max_time) + ((wrongPlacement-1) / max_wrong_attempt) + ((wrongPlacement-1) / max_total_attempt))));      
+        }
+    })
 
-    const handleSubmitScore = () => {
+    // const calculateScore = ()=>{
+    //     setScore(10 - (3.33 * ((count / max_time) + (wrongPlacement / max_wrong_attempt) + (wrongPlacement / max_total_attempt))));
+    //     handleSubmitScore()
+    // }
+
+    const handleSubmitScore = async () => {
         console.log(count);
-        setScore(10 - (3.33 * ((count / max_time) + (wrongPlacement / max_wrong_attempt) + (wrongPlacement / max_total_attempt))));
+        // setScore(10 - (3.33 * ((count / max_time) + (wrongPlacement / max_wrong_attempt) + (wrongPlacement / max_total_attempt))));
         console.log("Score:", score);
-        setGameEnded(true); 
+        setGameEnded(true);
+        try {
+            // const response = await axios.post(`${process.env.API_HOST}/user/login`, {
+            const response = await axios.post('http://192.168.1.35:8500/games/basicetiquette', {
+
+                username: username,
+                timeToComplete: count,
+                noOfWrong: wrongPlacement,
+                totalNoOfAttempt: wrongPlacement + 4,
+                score: score
+            });
+            console.log(response.data);
+        } catch (error) {
+            console.log('Error', error.response.data.message);
+        }
     }
 
     useEffect(() => {
