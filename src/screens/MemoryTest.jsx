@@ -1,6 +1,4 @@
-
-
-// //working code 
+//working code 
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Button, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { ObjectImages } from '../../assets/images/Objects/ObjectImages';
@@ -10,8 +8,6 @@ import { getKeyById } from '../../constants/ObjectId';
 import { Images } from "../../assets/images/Objects/Images";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-
-
 
 const MemoryTest = () => {
   const [selectedImageKeys, setSelectedImageKeys] = useState([]);
@@ -70,7 +66,6 @@ const MemoryTest = () => {
   }, [selectedImageKeys]);
 
   useEffect(() => {
-    // Clear the selected images history array when a new random selection takes place
     setSelectedImagesHistory([]);
   }, [images]);
 
@@ -129,40 +124,6 @@ const MemoryTest = () => {
     setImages([]);
     setStart(true);
   };
-
-  // const calculateScore = async () => {
-  //   let newScore = 0;
-  //   if (difficulty === 'easy') {
-  //     newScore = 7 - 3 * ((1000 - timer) / max_time + (wrongPlacement - 1) / max_wrong + (wrongPlacement - 1) / max_total_attempt) + 1;
-  //   } else if (difficulty === 'medium') {
-  //     newScore = 7 - 3 * ((1000 - timer) / max_time + (wrongPlacement - 1) / max_wrong + (wrongPlacement - 1) / max_total_attempt) + 3;
-  //   } else if (difficulty === 'hard') {
-  //     newScore = 4 - 3 * ((1000 - timer) / max_time + (wrongPlacement - 1) / max_wrong + (wrongPlacement - 1) / max_total_attempt) + 6;
-  //   }
-  //   console.log('score', newScore);
-  //   console.log('wrong', wrongPlacement - 1);
-  //   console.log('time', 1000 - timer);
-  //   console.log('difficulty', difficulty);
-  //   console.log('username', username);
-  //   console.log('totalNumber of atemp', wrongPlacement + correctPlacement - 1);
-  //   setScore(newScore);
-  //   try {
-  //     // const response = await axios.post(`${process.env.API_HOST}/user/login`, {
-  //     const response = await axios.post('http://192.168.1.35:8500/games/memorytest', {
-  //       username: username,
-  //       timeToComplete: 1000 - timer,
-  //       noOfWrong: wrongPlacement - 1,
-  //       totalNoOfAttempt: wrongPlacement + correctPlacement - 1,
-  //       score: newScore,
-  //       difficulty: difficulty,
-  //     });
-  //     console.log(response.data);
-  //   } catch (error) {
-  //     console.log('Error', error.response.data.message);
-  //   }
-  // }
-
-
   const calculateScore = async () => {
     let newScore = 0;
     if (difficulty === 'easy') {
