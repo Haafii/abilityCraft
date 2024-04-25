@@ -102,7 +102,7 @@ const MemoryTest = () => {
 
       // Call the checkPlacement function when placing a new object
       checkPlacement(getKeyById(data.cardUID));
-      // console.log("reading from firebase and passed to getKey:", getKeyById(data.cardUID));
+      console.log("reading from firebase and passed to getKey:", getKeyById(data.cardUID));
     });
   }, []);
 
