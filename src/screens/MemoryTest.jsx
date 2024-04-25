@@ -23,6 +23,7 @@ const MemoryTest = () => {
   const [correctPlacement, setCorrectPlacement] = useState(0);
   const [wrongPlacement, setWrongPlacement] = useState(0);
   const [username, setUsername] = useState(null);
+  const [gameEnded, setGameEnded] = useState(false  );
   const a = useRef(0);
   const max_time = 300;
   const max_wrong = 25;
@@ -157,8 +158,9 @@ const MemoryTest = () => {
         console.log('Error message:', error.response.data.message);
       }
     }
+    setGameEnded(true)
   }
-  
+
 
 
   const handleEndClick = () => {
@@ -171,6 +173,18 @@ const MemoryTest = () => {
     setWrongPlacement(0);
     calculateScore();
   };
+
+  if (gameEnded) {
+    return (
+      <View  className="bg-gray-300 flex h-full items-center justify-center">
+        <Text style={styles.placementCounter}>Correct: {correctPlacement}</Text>
+        <Text style={styles.placementCounter}>Wrong: {wrongPlacement}</Text>
+        <Text style={styles.placementCounter}>Difficulty: {difficulty}</Text>
+        <Text style={styles.placementCounter}>Score: {score}</Text>
+
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-gray-200 w-full h-full items-center justify-center">
@@ -233,6 +247,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
+  containerGameEnded: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0', // Set a background color for the container
+},
   images: {
     width: 200, // Adjust width as needed
     height: 200, // Adjust height as needed
