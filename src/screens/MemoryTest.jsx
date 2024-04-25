@@ -1,13 +1,17 @@
 
 
-//working code 
-import React, { useState, useEffect } from 'react';
-import { View, Text, Button, Image, TouchableOpacity, StyleSheet } from 'react-native';
+// //working code 
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, Button, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { ObjectImages } from '../../assets/images/Objects/ObjectImages';
 import { db } from '../../config';
 import { ref, onValue } from "firebase/database";
 import { getKeyById } from '../../constants/ObjectId';
 import { Images } from "../../assets/images/Objects/Images";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+
+
 
 const MemoryTest = () => {
   const [selectedImageKeys, setSelectedImageKeys] = useState([]);
@@ -22,7 +26,13 @@ const MemoryTest = () => {
   const [placedObjects, setPlacedObjects] = useState([]);
   const [correctPlacement, setCorrectPlacement] = useState(0);
   const [wrongPlacement, setWrongPlacement] = useState(0);
-  
+  const [username, setUsername] = useState(null);
+  const a = useRef(0);
+  const max_time = 300;
+  const max_wrong = 25;
+  const max_total_attempt = 37;
+  const [score, setScore] = useState(0);
+
 
   const startGame = (difficultyLevel) => {
     setDifficulty(difficultyLevel);
@@ -40,18 +50,23 @@ const MemoryTest = () => {
         keys.push(randomImageKey);
       }
     }
-    console.log("images",keys);
+    console.log("images", keys);
     setSelectedImagesHistory((prevHistory) => [...prevHistory, keys]);
-    const updatedKeys = [...keys]
-    setSelectedImageKeys(updatedKeys);
+    const updatedKeys = [keys]
+    setSelectedImageKeys(...updatedKeys);
     setImages(selectedImages);
-    setTimer(30);
+    setTimer(5);
     setCountingDown(true);
   };
 
-
+  async function getData() {
+    const loggedUsername = await AsyncStorage.getItem('loggedUsername');
+    setUsername(loggedUsername)
+  }
   useEffect(() => {
-    console.log("selectedImageKeys", selectedImageKeys);
+    // console.log("selectedImageKeys", selectedImageKeys);
+    a.current = selectedImageKeys
+    // console.log(a)
   }, [selectedImageKeys]);
 
   useEffect(() => {
@@ -75,13 +90,15 @@ const MemoryTest = () => {
     return () => clearInterval(interval);
   }, [countingDown, timer]);
 
+  useEffect(() => {
+    getData();
+  })
 
-  
   useEffect(() => {
     const startCountRef = ref(db, 'rfid/');
     onValue(startCountRef, (snapshot) => {
       const data = snapshot.val();
-      console.log("data from firebase :",data.cardUID);
+      // console.log("data from firebase :",data.cardUID);
       setCurrentObject(getKeyById(data.cardUID));
 
       placedObjects.push(getKeyById(data.cardUID));
@@ -89,14 +106,16 @@ const MemoryTest = () => {
 
       // Call the checkPlacement function when placing a new object
       checkPlacement(getKeyById(data.cardUID));
-      console.log("reading from firebase and passed to getKey:",getKeyById(data.cardUID));
+      // console.log("reading from firebase and passed to getKey:", getKeyById(data.cardUID));
     });
   }, []);
 
+
   // Function to check placement and update counters
   const checkPlacement = (objectId) => {
-    console.log("yyy",selectedImageKeys);
-    if (selectedImageKeys.flat().includes(objectId)) {
+    // console.log("yyy",selectedImageKeys);
+    // console.log("yyy",a.current);
+    if (a.current.flat().includes(objectId)) {
       setCorrectPlacement((prevCount) => prevCount + 1);
     } else {
       setWrongPlacement((prevCount) => prevCount + 1);
@@ -111,6 +130,76 @@ const MemoryTest = () => {
     setStart(true);
   };
 
+  // const calculateScore = async () => {
+  //   let newScore = 0;
+  //   if (difficulty === 'easy') {
+  //     newScore = 7 - 3 * ((1000 - timer) / max_time + (wrongPlacement - 1) / max_wrong + (wrongPlacement - 1) / max_total_attempt) + 1;
+  //   } else if (difficulty === 'medium') {
+  //     newScore = 7 - 3 * ((1000 - timer) / max_time + (wrongPlacement - 1) / max_wrong + (wrongPlacement - 1) / max_total_attempt) + 3;
+  //   } else if (difficulty === 'hard') {
+  //     newScore = 4 - 3 * ((1000 - timer) / max_time + (wrongPlacement - 1) / max_wrong + (wrongPlacement - 1) / max_total_attempt) + 6;
+  //   }
+  //   console.log('score', newScore);
+  //   console.log('wrong', wrongPlacement - 1);
+  //   console.log('time', 1000 - timer);
+  //   console.log('difficulty', difficulty);
+  //   console.log('username', username);
+  //   console.log('totalNumber of atemp', wrongPlacement + correctPlacement - 1);
+  //   setScore(newScore);
+  //   try {
+  //     // const response = await axios.post(`${process.env.API_HOST}/user/login`, {
+  //     const response = await axios.post('http://192.168.1.35:8500/games/memorytest', {
+  //       username: username,
+  //       timeToComplete: 1000 - timer,
+  //       noOfWrong: wrongPlacement - 1,
+  //       totalNoOfAttempt: wrongPlacement + correctPlacement - 1,
+  //       score: newScore,
+  //       difficulty: difficulty,
+  //     });
+  //     console.log(response.data);
+  //   } catch (error) {
+  //     console.log('Error', error.response.data.message);
+  //   }
+  // }
+
+
+  const calculateScore = async () => {
+    let newScore = 0;
+    if (difficulty === 'easy') {
+      newScore = 7 - 3 * ((1000 - timer) / max_time + (wrongPlacement - 1) / max_wrong + (wrongPlacement - 1) / max_total_attempt) + 1;
+    } else if (difficulty === 'medium') {
+      newScore = 7 - 3 * ((1000 - timer) / max_time + (wrongPlacement - 1) / max_wrong + (wrongPlacement - 1) / max_total_attempt) + 3;
+    } else if (difficulty === 'hard') {
+      newScore = 4 - 3 * ((1000 - timer) / max_time + (wrongPlacement - 1) / max_wrong + (wrongPlacement - 1) / max_total_attempt) + 6;
+    }
+    console.log('score', newScore);
+    console.log('wrong', wrongPlacement - 1);
+    console.log('time', 1000 - timer);
+    console.log('difficulty', difficulty);
+    console.log('username', username);
+    console.log('totalNumber of attemp', wrongPlacement + correctPlacement - 1);
+    setScore(newScore);
+    try {
+      // const response = await axios.post(`${process.env.API_HOST}/user/login`, {
+      const response = await axios.post('http://192.168.1.35:8500/games/memorytest', {
+        username: username,
+        timeToComplete: 1000 - timer,
+        noOfWrong: wrongPlacement - 1,
+        totalNoOfAttempt: wrongPlacement + correctPlacement - 1,
+        score: newScore,
+        difficulty: difficulty,
+      });
+      console.log(response.data);
+    } catch (error) {
+      console.log('Error', error);
+      if (error.response && error.response.data && error.response.data.message) {
+        console.log('Error message:', error.response.data.message);
+      }
+    }
+  }
+  
+
+
   const handleEndClick = () => {
     setCountingDown(false);
     setStart(false);
@@ -119,6 +208,7 @@ const MemoryTest = () => {
     setPlacedObjects([]);
     setCorrectPlacement(0);
     setWrongPlacement(0);
+    calculateScore();
   };
 
   return (
@@ -149,11 +239,18 @@ const MemoryTest = () => {
         <><TouchableOpacity style={styles.startButton} onPress={handleEndClick}>
           <Text>End</Text>
         </TouchableOpacity>
-          <View style={styles.container}>
-            {currentObject && placedObjects.slice(1).map((item, index) => (
-              <Image key={index} source={Images[item]} style={styles.image} />
-            ))}
-          </View></>
+          <ScrollView contentContainerStyle={styles.container}>
+            {currentObject &&
+              placedObjects.slice(1).map((item, index) => (
+                <View key={index} style={styles.row}>
+                  {placedObjects.slice(1 + index * 3, 1 + index * 3 + 3).map((subItem, subIndex) => (
+                    <Image key={subIndex} source={Images[subItem]} style={styles.image} />
+                  ))}
+                </View>
+              ))}
+          </ScrollView>
+
+        </>
 
       )}
     </View>
@@ -170,12 +267,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   container: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
   },
   images: {
     width: 200, // Adjust width as needed
