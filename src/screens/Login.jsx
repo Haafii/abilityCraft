@@ -22,7 +22,9 @@ const Login = ({ navigation }) => {
         }
       });
       console.log(response.data.username);
+      console.log("full name",response.data.fullName);
       AsyncStorage.setItem('loggedUsername', response.data.username);
+      AsyncStorage.setItem('loggedFullName', response.data.fullName);
       AsyncStorage.setItem('isLoggedIn', JSON.stringify(true));
       console.log('Success');
     } catch (error) {

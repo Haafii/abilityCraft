@@ -16,16 +16,15 @@ export default function Profile({navigation}) {
 
 
     const handleLogout = () => {
-        removeData('loggedUsername');
-        
-
+        removeData('loggedUsername');    
     };
+    loggedFullName
 
     return (
         <View style={styles.container}>
             <Image
                 style={styles.avatar}
-                source={{ uri: 'https://via.placeholder.com/150' }}
+                source={{ uri: 'https://img.freepik.com/free-photo/cat-with-bell-its-neck-collar-that-says-cat-it_1340-32743.jpg?size=626&ext=jpg' }}
             />
             <Text style={styles.username}>John Doe</Text>
             <View style={styles.infoContainer}>
