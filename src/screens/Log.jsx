@@ -1,4 +1,5 @@
 // working
+
 // import React, { useEffect, useState } from 'react';
 // import { View, Text, TouchableOpacity, FlatList, StyleSheet, SafeAreaView } from 'react-native';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,6 +8,11 @@
 // const Log = () => {
 //   const [selectedTab, setSelectedTab] = useState('Basic Etiquette');
 //   const [username, setUsername] = useState('');
+//   const [basicEtiquetteScore, setBasicEtiquetteScore] = useState(0);
+//   const [memoryTestScore, setMemoryTestScore] = useState(0);
+//   const [speechTrainingScore, setSpeechTrainingScore] = useState(0);
+//   const [clickClassifyMe, setClassifyMe] = useState(false);
+//   const [predictedClass, setPredictedClass] = useState(null);
 //   const basicEtiquetteData = [];
 //   const memoryTestData = [];
 //   const speechTrainingData = [];
@@ -28,6 +34,11 @@
 //   useEffect(() => {
 //     getUser("loggedUsername");
 //   },);
+
+//   useEffect(() => {
+//     // Calculate latest scores when relevant data arrays change
+//     // calculateLatestScores();
+//   }, [basicEtiquetteData, memoryTestData, speechTrainingData]);
   
 //   const adjustToIST = (dateTimeString) => {
 //     const utcDateTime = new Date(dateTimeString);
@@ -69,7 +80,7 @@
 //     try {
 //       const apiUrl = 'http://192.168.1.35:8500/games/getbasicetiquette/admin';
 //       // const apiUrl = `http://192.168.1.35:8500/games/getbasicetiquette/${username}`;
-//       console.log(apiUrl);
+//       // console.log(apiUrl);
 //       const response = await axios.get(apiUrl);
 //       const formattedData = response.data.map(item => ({
 //         date: formatDateTimeToIST(item.date),
@@ -209,6 +220,73 @@
 //         return null;
 //     }
 //   };
+//   const calculateLatestScores = async () => {
+//     let latestBasicEtiquette;
+//     let latestMemoryTest;
+//     let latestSpeechTraining;
+    
+//     if (basicEtiquetteData.length > 0) {
+//       latestBasicEtiquette = basicEtiquetteData[basicEtiquetteData.length - 1];
+//       setBasicEtiquetteScore(latestBasicEtiquette.score);
+//     }
+  
+//     if (memoryTestData.length > 0) {
+//       latestMemoryTest = memoryTestData[memoryTestData.length - 1];
+//       setMemoryTestScore(latestMemoryTest.score);
+//     }
+  
+//     if (speechTrainingData.length > 0) {
+//       latestSpeechTraining = speechTrainingData[speechTrainingData.length - 1];
+//       setSpeechTrainingScore(latestSpeechTraining.score);
+//     }
+  
+//     const url = 'https://abilitycraft-model-3.onrender.com/predict'; // Update the URL here
+//     const inputData = {
+//       basic_etiquette: latestBasicEtiquette ? latestBasicEtiquette.score : 0,
+//       memory_test: latestMemoryTest ? latestMemoryTest.score : 0,
+//       speech_test: latestSpeechTraining ? latestSpeechTraining.score : 0
+//     };
+  
+//     console.log('Input data:', inputData);
+  
+//     try {
+//       const response = await fetch(url, {
+//         method: 'POST',
+//         headers: {
+//           'Accept': 'application/json',
+//           'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify(inputData)
+//       });
+  
+//       if (!response.ok) {
+//         throw new Error('Network response was not ok');
+//       }
+  
+//       const responseData = await response.json();
+//       console.log('Predicted class:', responseData.predicted_class);
+//       setPredictedClass(responseData.predicted_class);
+//     } catch (error) {
+//       // Handle any errors
+//       console.error('Error:', error);
+//     }
+//   };
+    
+
+//   const handleClassifyMe = () => {
+//     calculateLatestScores();
+//     setClassifyMe(true);
+//   };
+
+
+//   if (clickClassifyMe && predictedClass) {
+//     return (
+//       <View  className="bg-gray-300 flex h-full items-center justify-center">
+//         <Text style={styles.placementCounter}>Class: {predictedClass}</Text>
+
+//       </View>
+//     );
+//   }
 
 
 //   return (
@@ -226,7 +304,7 @@
 //       </View>
 //       {renderTable()}
 //       <TouchableOpacity style={styles.classifyButton}>
-//         <Text style={styles.classifyButtonText}>Classify Me</Text>
+//         <Text style={styles.classifyButtonText} onPress={handleClassifyMe}>Classify Me</Text>
 //       </TouchableOpacity>
 //     </SafeAreaView>
 //   );
@@ -237,6 +315,12 @@
 //     flex: 1,
 //     padding: 10,
 //     marginTop: 30,
+//   },
+//   placementCounter: {
+//     fontSize: 18,
+//     fontWeight: 'bold',
+//     marginTop: 10,
+//     color: '#333', // You can change the color as needed
 //   },
 //   tabContainer: {
 //     flexDirection: 'row',
@@ -297,13 +381,13 @@
 //     textAlign: 'center',
 //     fontStyle: 'italic',
 //     marginTop: 10,
-//   },  
+//   },
 // });
 
 // export default Log;
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, SafeAreaView, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
@@ -313,6 +397,8 @@ const Log = () => {
   const [basicEtiquetteScore, setBasicEtiquetteScore] = useState(0);
   const [memoryTestScore, setMemoryTestScore] = useState(0);
   const [speechTrainingScore, setSpeechTrainingScore] = useState(0);
+  const [clickClassifyMe, setClassifyMe] = useState(false);
+  const [predictedClass, setPredictedClass] = useState(null);
   const basicEtiquetteData = [];
   const memoryTestData = [];
   const speechTrainingData = [];
@@ -337,7 +423,7 @@ const Log = () => {
 
   useEffect(() => {
     // Calculate latest scores when relevant data arrays change
-    calculateLatestScores();
+    // calculateLatestScores();
   }, [basicEtiquetteData, memoryTestData, speechTrainingData]);
   
   const adjustToIST = (dateTimeString) => {
@@ -520,34 +606,82 @@ const Log = () => {
         return null;
     }
   };
-
-  const calculateLatestScores = () => {
-
+  const calculateLatestScores = async () => {
+    let latestBasicEtiquette;
+    let latestMemoryTest;
+    let latestSpeechTraining;
+    
     if (basicEtiquetteData.length > 0) {
-      const latestBasicEtiquette = basicEtiquetteData[basicEtiquetteData.length - 1];
+      latestBasicEtiquette = basicEtiquetteData[basicEtiquetteData.length - 1];
       setBasicEtiquetteScore(latestBasicEtiquette.score);
     }
-
+  
     if (memoryTestData.length > 0) {
-      const latestMemoryTest = memoryTestData[memoryTestData.length - 1];
+      latestMemoryTest = memoryTestData[memoryTestData.length - 1];
       setMemoryTestScore(latestMemoryTest.score);
     }
-
+  
     if (speechTrainingData.length > 0) {
-      const latestSpeechTraining = speechTrainingData[speechTrainingData.length - 1];
+      latestSpeechTraining = speechTrainingData[speechTrainingData.length - 1];
       setSpeechTrainingScore(latestSpeechTraining.score);
     }
+  
+    const url = 'https://abilitycraft-model-3.onrender.com/predict'; // Update the URL here
+    const inputData = {
+      basic_etiquette: latestBasicEtiquette ? latestBasicEtiquette.score : 0,
+      memory_test: latestMemoryTest ? latestMemoryTest.score : 0,
+      speech_test: latestSpeechTraining ? latestSpeechTraining.score : 0
+    };
+  
+    console.log('Input data:', inputData);
+  
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(inputData)
+      });
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      const responseData = await response.json();
+      console.log('Predicted class:', responseData.predicted_class);
+      setPredictedClass(responseData.predicted_class);
+    } catch (error) {
+      // Handle any errors
+      console.error('Error:', error);
+    }
   };
+    
 
   const handleClassifyMe = () => {
     calculateLatestScores();
-    console.log("Latest Scores:");
-    console.log("Basic Etiquette Score:", basicEtiquetteScore);
-    console.log("Memory Test Score:", memoryTestScore);
-    console.log("Speech Training Score:", speechTrainingScore);
-
+    setClassifyMe(true);
   };
 
+
+  if (clickClassifyMe && predictedClass) {
+    return (
+      <View className="bg-gray-300 flex h-full items-center justify-center">
+        <Text style={styles.placementCounter}>Class: {predictedClass}</Text>
+      </View>
+    );
+  }
+  
+  if (clickClassifyMe) {
+    return (
+      <View style={styles.containerLoading}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
+  
 
 
   return (
@@ -576,6 +710,23 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     marginTop: 30,
+  },
+  placementCounter: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 10,
+    color: '#333', // You can change the color as needed
+  },
+  containerLoading: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#333',
   },
   tabContainer: {
     flexDirection: 'row',
@@ -636,7 +787,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontStyle: 'italic',
     marginTop: 10,
-  },  
+  },
 });
 
 export default Log;
