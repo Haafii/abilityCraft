@@ -1,24 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-export default function Profile({navigation}) {
+export default function Profile({ navigation }) {
+    const [username, setUsername] = useState(null);
+    const [FullName, setFullName] = useState(null);
     const removeData = async (key) => {
         try {
-          await AsyncStorage.removeItem(key);
-          console.log('Data removed successfully!');
-          navigation.navigate('Login');
+            await AsyncStorage.removeItem(key);
+            console.log('Data removed successfully!');
+            navigation.navigate('Login');
         } catch (error) {
-          console.log('Error removing data:', error);
+            console.log('Error removing data:', error);
         }
-      };
-
-
-    const handleLogout = () => {
-        removeData('loggedUsername');    
     };
-    loggedFullName
+    const handleLogout = () => {
+        removeData('loggedUsername');
+        removeData('loggedFullName');
+    };
+
+    async function getData() {
+        const loggedUsername = await AsyncStorage.getItem('loggedUsername');
+        const loggedFullName = await AsyncStorage.getItem('loggedFullName');
+        setUsername(loggedUsername);
+        setFullName(loggedFullName);
+
+    }
+    useEffect(() => {
+        getData();
+    })
 
     return (
         <View style={styles.container}>
@@ -26,14 +37,14 @@ export default function Profile({navigation}) {
                 style={styles.avatar}
                 source={{ uri: 'https://img.freepik.com/free-photo/cat-with-bell-its-neck-collar-that-says-cat-it_1340-32743.jpg?size=626&ext=jpg' }}
             />
-            <Text style={styles.username}>John Doe</Text>
+            <Text style={styles.username}>{FullName}</Text>
             <View style={styles.infoContainer}>
                 <Text style={styles.infoLabel}>Username:</Text>
-                <Text style={styles.infoText}>johndoe@example.com</Text>
+                <Text style={styles.infoText}>{username}</Text>
             </View>
             {/* <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Location:</Text>
-                <Text style={styles.infoText}>New York, USA</Text>
+                <Text style={styles.infoLabel}>Full Name:</Text>
+                <Text style={styles.infoText}>{FullName}</Text>
             </View> */}
             {/* Add more info sections as needed */}
             <TouchableOpacity style={styles.buttonContainer} onPress={handleLogout}>
