@@ -273,6 +273,7 @@ const Log = () => {
     
 
   const handleClassifyMe = () => {
+    console.log('Classifying...');
     calculateLatestScores();
     setClassifyMe(true);
   };
