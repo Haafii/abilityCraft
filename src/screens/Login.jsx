@@ -16,7 +16,7 @@ const Login = ({ navigation }) => {
         throw new Error('Internal server error try again');
       }
       // const response = await axios.get(`${process.env.API_HOST}/user/current`, {
-        const response = await axios.get('http://192.168.1.35:8500/user/current', {
+        const response = await axios.get('http://192.168.128.212:8500/user/current', {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
@@ -36,7 +36,7 @@ const Login = ({ navigation }) => {
   const handleLogin = async () => {
     try {
       // const response = await axios.post(`${process.env.API_HOST}/user/login`, {
-      const response = await axios.post('http://192.168.1.35:8500/user/login', {
+      const response = await axios.post('http://192.168.128.212:8500/user/login', {
 
         username: username,
         password: password

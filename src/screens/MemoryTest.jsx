@@ -23,7 +23,7 @@ const MemoryTest = () => {
   const [correctPlacement, setCorrectPlacement] = useState(0);
   const [wrongPlacement, setWrongPlacement] = useState(0);
   const [username, setUsername] = useState(null);
-  const [gameEnded, setGameEnded] = useState(false  );
+  const [gameEnded, setGameEnded] = useState(false);
   const a = useRef(0);
   const max_time = 300;
   const max_wrong = 25;
@@ -52,7 +52,7 @@ const MemoryTest = () => {
     const updatedKeys = [keys]
     setSelectedImageKeys(...updatedKeys);
     setImages(selectedImages);
-    setTimer(5);
+    setTimer(15);
     setCountingDown(true);
   };
 
@@ -143,7 +143,7 @@ const MemoryTest = () => {
     setScore(newScore);
     try {
       // const response = await axios.post(`${process.env.API_HOST}/user/login`, {
-      const response = await axios.post('http://192.168.1.35:8500/games/memorytest', {
+      const response = await axios.post('http://192.168.128.212:8500/games/memorytest', {
         username: username,
         timeToComplete: 1000 - timer,
         noOfWrong: wrongPlacement - 1,
@@ -169,10 +169,12 @@ const MemoryTest = () => {
     // console.log(1000 - timer);
     setShowButtons(true);
     setPlacedObjects([]);
-    setCorrectPlacement(0);
-    setWrongPlacement(0);
+    // setCorrectPlacement(0);
+    // setWrongPlacement(0);
     calculateScore();
   };
+
+  // console.log(correctPlacement)
 
   if (gameEnded) {
     return (

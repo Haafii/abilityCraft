@@ -1,7 +1,18 @@
-import React from 'react';
-import { View, Text, ImageBackground, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ImageBackground, TouchableOpacity, StyleSheet, Image, Linking } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const Games = ({ navigation }) => {
+    const [username, setUsername] = useState(null);
+    async function getData() {
+        const loggedUsername = await AsyncStorage.getItem('loggedUsername');
+        setUsername(loggedUsername)
+    }
+    useEffect(() => {
+        getData();
+      })
+      console.log(username)
     const handleBasicEtiquettePress = () => {
         console.log('Basic Etiquette card pressed');
         navigation.navigate('BasicEtiquette');
@@ -15,11 +26,11 @@ const Games = ({ navigation }) => {
     };
 
     const handleSpeakingPress = () => {
-        console.log('Speaking card pressed');
-        navigation.navigate('Speaking');
-        // Add your logic specific to Speaking card here
+        // console.log('Speaking card pressed');
+        // navigation.navigate('Speaking');
+        const speechUrl = `https://ability-craft-web.pages.dev/?data=${encodeURIComponent(username)}`;
+        Linking.openURL(speechUrl);
     };
-
     const renderCard = (title, imagePath, onPress) => (
         <TouchableOpacity onPress={onPress} style={styles.card}>
             <Image source={imagePath} style={styles.cardImage} />

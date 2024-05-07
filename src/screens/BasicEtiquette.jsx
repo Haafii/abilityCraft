@@ -1,7 +1,7 @@
 //almost completed
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { Video } from 'expo-av';
+import { Video, ResizeMode } from 'expo-av';
 import { db } from '../../config';
 import { ref, onValue } from "firebase/database";
 import { ObjectImages } from '../../assets/images/BasicEtiquette/ObjectImages';
@@ -70,7 +70,7 @@ const BasicEtiquette = () => {
         setGameEnded(true);
         try {
             // const response = await axios.post(`${process.env.API_HOST}/user/login`, {
-            const response = await axios.post('http://192.168.1.35:8500/games/basicetiquette', {
+            const response = await axios.post('http://192.168.128.212:8500/games/basicetiquette', {
 
                 username: username,
                 timeToComplete: count,
@@ -149,6 +149,8 @@ const BasicEtiquette = () => {
                     source={videos[selectedVideoIndex]}
                     shouldPlay
                     isLooping={false}
+                    resizeMode={ResizeMode.CONTAIN}
+                    // orientation={portrait}
                     onPlaybackStatusUpdate={(status) => {
                         if (status.didJustFinish) {
                             onEnd();

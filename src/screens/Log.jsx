@@ -77,8 +77,8 @@ const Log = () => {
 
   const fetchBasicEtiquetteData = async () => {
     try {
-      const apiUrl = 'http://192.168.1.35:8500/games/getbasicetiquette/admin';
-      // const apiUrl = `http://192.168.1.35:8500/games/getbasicetiquette/${username}`;
+      const apiUrl = 'http://192.168.128.212:8500/games/getbasicetiquette/admin';
+      // const apiUrl = `http://192.168.128.212:8500/games/getbasicetiquette/${username}`;
       // console.log(apiUrl);
       const response = await axios.get(apiUrl);
       const formattedData = response.data.map(item => ({
@@ -99,8 +99,8 @@ const Log = () => {
 
   const fetchMemoryTestData = async () => {
     try {
-      const apiUrl = 'http://192.168.1.35:8500/games/getmemorytest/admin';
-      // const apiUrl = `http://192.168.1.35:8500/games/getmemorytest/${username}`;
+      const apiUrl = 'http://192.168.128.212:8500/games/getmemorytest/admin';
+      // const apiUrl = `http://192.168.128.212:8500/games/getmemorytest/${username}`;
       const response = await axios.get(apiUrl);
       const formattedData = response.data.map(item => ({
         date: formatDateTimeToIST(item.date),
@@ -120,8 +120,8 @@ const Log = () => {
 
   const fetchSpeechTrainingData = async () => {
     try {
-      const apiUrl = 'http://192.168.1.35:8500/games/getspeechtraining/admin';
-      // const apiUrl = `http://192.168.1.35:8500/games/getspeechtraining/${username}`;
+      const apiUrl = 'http://192.168.128.212:8500/games/getspeechtraining/admin';
+      // const apiUrl = `http://192.168.128.212:8500/games/getspeechtraining/${username}`;
       const response = await axios.get(apiUrl);
       const formattedData = response.data.map(item => ({
         date: formatDateTimeToIST(item.date),
@@ -405,3 +405,6 @@ const styles = StyleSheet.create({
 });
 
 export default Log;
+
+
+
